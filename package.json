@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha test/**/*.js"
   },
-  "bins": {
+  "bin": {
     "nct": "./bin/nct"
   },
   "repository": {

@@ -146,7 +146,7 @@ const apiLocation = ({
 const getProxyPass = (variableName, proxyMap, defaultProxy) => {
   const prev = _.map(proxyMap, (proxy, vv) => {
     return `
-        if($${variableName} = ${vv}) {
+        if ($${variableName} = ${vv}) {
             proxy_pass ${proxy};
         }`
   }).join('\n');
@@ -163,16 +163,6 @@ const rewriteLocation = (path, from, to, type = 'last') => {
         rewrite  ${from}  ${to} ${type};
     }
     `;
-};
-
-const indexLocation = (path, indexFile) => {
-  return `
-    location = ${path} {
-        add_header 'Cache-Control' 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0';
-        expires off;
-        try_files $uri ${indexFile};
-    }
-`
 };
 
 const staticFileLocation = (path, fileLocation) => {
@@ -203,13 +193,65 @@ const staticDirLocation = (path, dir) => {
 const getDir = (variableName, dirMap, defDir) => {
   const prev = _.map(dirMap, (dir, vv) => {
     return `
-        if($${variableName} = ${vv}) {
+        if ($${variableName} = ${vv}) {
             root ${dir};
         }`
   }).join('\n');
 
   return `${prev}
         alias ${defDir};`
+};
+
+const getFile = (variableName, rootMap, defFile) => {
+  const prev = _.map(rootMap, (dir, vv) => {
+    return `
+        if ($${variableName} = ${vv}) {
+            root ${dir};
+        }`
+  }).join('\n');
+
+  return `
+    location = / {
+        add_header 'Cache-Control' 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0';
+        expires off;
+        rewrite  ^/$  /index.html  last;
+    }
+
+    location = /index.html {
+       add_header 'Cache-Control' 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0';
+       expires off;
+
+       ${prev} 
+
+       try_files $uri /campaign-ui/production/stage/index.html;
+    }
+    `;
+};
+
+const indexLocation = (indexFile, rootMap = {}) => {
+  const prev = _.map(rootMap, (dir, vv) => {
+    return `
+        if ($${variableName} = ${vv}) {
+            root ${dir};
+        }`
+  }).join('\n');
+
+  return `
+    location = / {
+        add_header 'Cache-Control' 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0';
+        expires off;
+        rewrite  ^/$  /index.html  last;
+    }
+
+    location = /index.html {
+       add_header 'Cache-Control' 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0';
+       expires off;
+
+       ${prev} 
+
+       try_files $uri ${indexFile};
+    }
+    `;
 };
 
 module.exports = {

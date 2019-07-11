@@ -6,11 +6,11 @@ const path = require('path');
 const {
     readConfig, writeTxt
 } = require('flexdeploy/src/util');
-const {getNginxConf} = require('..');
+const {getNginxHttpConf} = require('..');
 
 yargs.usage(`Usage: nct
     --config    config file path
-    --output    output file path
+    --output    output dir path
     `).help('h').alias('h', 'help');
 
 const {argv} = yargs;
@@ -18,12 +18,12 @@ const {argv} = yargs;
 const run = async () => {
   // read config
   const cnfFilePath = path.resolve(process.cwd(), argv.config || 'nct.js');
-  const outputFilePath = path.resolve(process.cwd(), argv.output);
+  const outputDirPath = path.resolve(process.cwd(), argv.output);
   const cnf = Object.assign(await readConfig(cnfFilePath), {});
-  const {upstreams, servers} = getNginxConf(cnf);
+  const {upstreams, servers} = getNginxHttpConf(cnf.http);
 
   // write to file
-  await writeTxt(outputFilePath, `${upstreams}
+  await writeTxt(path.join(outputDirPath, 'http.conf'), `${upstreams}
 ${servers}`);
 };
 

@@ -2,7 +2,7 @@
 
 const _ = require('lodash');
 
-const getNginxConf = (cnf) => {
+const getNginxHttpConf = (cnf) => {
   return {
     upstreams: getNginxUpstreamConf(cnf.upstreams),
     servers: cnf.servers.join('\n')
@@ -44,6 +44,7 @@ const httpServer = ({
 server {
     listen ${port};
     server_name ${serverName};
+    ${root? `root ${root};`: ''}
 
     # Load configuration files for the default server block.
     include /etc/nginx/default.d/*.conf;
@@ -87,6 +88,7 @@ server {
     listen ${port} ssl;
     ssl_certificate ${sslCertificate};
     ssl_certificate_key ${sslCertificateKey};
+    ${root? `root ${root};`: ''}
 
     server_name ${serverName};
 
@@ -211,7 +213,7 @@ const getDir = (variableName, dirMap, defDir) => {
 };
 
 module.exports = {
-  getNginxConf,
+  getNginxHttpConf,
 
   httpServer,
   httpsServer,

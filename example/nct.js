@@ -42,7 +42,7 @@ module.exports = {
           }, 'http://online')
         }),
 
-        indexLocation('/home', '/index.html'),
+        indexLocation('/index.html'),
 
         staticDirLocation('/assets/', getDir('abtest_country', {
           'yes': '/stage'

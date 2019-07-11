@@ -228,7 +228,7 @@ const getFile = (variableName, rootMap, defFile) => {
     `;
 };
 
-const indexLocation = (indexFile, rootMap = {}) => {
+const indexLocation = (indexFile, variableName, rootMap = {}) => {
   const prev = _.map(rootMap, (dir, vv) => {
     return `
         if ($${variableName} = ${vv}) {

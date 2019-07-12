@@ -102,7 +102,7 @@ server {
     ${error50x} 
 }
 `;
-}
+};
 
 const default404 = () => {
   return `
@@ -121,7 +121,7 @@ const default50x = () => {
         root         /usr/share/nginx/html;
         internal;
     }
-    `
+    `;
 };
 
 const apiLocation = ({
@@ -140,7 +140,7 @@ const apiLocation = ({
         proxy_read_timeout         ${proxyReadTimeout}s;
         ${proxy}
     }
-`
+`;
 };
 
 const getProxyPass = (variableName, proxyMap, defaultProxy) => {
@@ -148,11 +148,11 @@ const getProxyPass = (variableName, proxyMap, defaultProxy) => {
     return `
         if ($${variableName} = ${vv}) {
             proxy_pass ${proxy};
-        }`
+        }`;
   }).join('\n');
 
   return `${prev}
-        proxy_pass ${defaultProxy};`
+        proxy_pass ${defaultProxy};`;
 };
 
 const rewriteLocation = (path, from, to, type = 'last') => {
@@ -182,7 +182,7 @@ const staticDirLocation = (path, dir) => {
         gzip_vary on;
         gzip_min_length 10240;
         gzip_proxied expired no-cache no-store private auth;
-        gzip_disable "MSIE [1-6]\.";
+        gzip_disable "MSIE [1-6]\\.";
         expires max;
 
         ${dir} 
@@ -195,55 +195,29 @@ const getDir = (variableName, dirMap, defDir) => {
     return `
         if ($${variableName} = ${vv}) {
             root ${dir};
-        }`
+        }`;
   }).join('\n');
 
   return `${prev}
-        alias ${defDir};`
+        alias ${defDir};`;
 };
 
-const getFile = (variableName, rootMap, defFile) => {
+const indexLocation = (indexFile, variableName, rootMap = {}, rootRoute = '/index.html') => {
   const prev = _.map(rootMap, (dir, vv) => {
     return `
         if ($${variableName} = ${vv}) {
             root ${dir};
-        }`
+        }`;
   }).join('\n');
 
   return `
     location = / {
         add_header 'Cache-Control' 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0';
         expires off;
-        rewrite  ^/$  /index.html  last;
+        rewrite  ^/$  ${rootRoute}  last;
     }
 
-    location = /index.html {
-       add_header 'Cache-Control' 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0';
-       expires off;
-
-       ${prev} 
-
-       try_files $uri /campaign-ui/production/stage/index.html;
-    }
-    `;
-};
-
-const indexLocation = (indexFile, variableName, rootMap = {}) => {
-  const prev = _.map(rootMap, (dir, vv) => {
-    return `
-        if ($${variableName} = ${vv}) {
-            root ${dir};
-        }`
-  }).join('\n');
-
-  return `
-    location = / {
-        add_header 'Cache-Control' 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0';
-        expires off;
-        rewrite  ^/$  /index.html  last;
-    }
-
-    location = /index.html {
+    location = ${rootRoute} {
        add_header 'Cache-Control' 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0';
        expires off;
 
@@ -268,5 +242,5 @@ module.exports = {
   redirectServer,
 
   getProxyPass,
-  getDir
+  getDir,
 };

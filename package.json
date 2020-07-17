@@ -30,7 +30,7 @@
   "dependencies": {
     "del": "^5.0.0",
     "flexdeploy": "0.0.23",
-    "lodash": "^4.17.14",
+    "lodash": "^4.17.19",
     "yargs": "^13.2.4"
   }
 }

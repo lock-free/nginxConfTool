@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/lock-free/nginxConfTool#readme",
   "devDependencies": {
-    "mocha": "^6.1.4"
+    "mocha": "^10.2.0"
   },
   "dependencies": {
     "del": "^5.0.0",
